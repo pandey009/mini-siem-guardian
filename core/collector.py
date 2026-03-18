@@ -5,7 +5,9 @@ from siem_parser import LogParser
 from siem_engine import DetectionEngine
 
 class Collector:
-    def __init__(self, db_path='siem.db'):
+    def __init__(self, db_path=None):
+        if db_path is None:
+            db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'siem.db')
         self.parser = LogParser()
         self.engine = DetectionEngine()
         self.db_path = db_path
