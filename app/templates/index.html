@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardian SIEM Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --high-severity: #ef4444;
+            --med-severity: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            background-image: radial-gradient(circle at top right, #1e1b4b, transparent), 
+                              radial-gradient(circle at bottom left, #312e81, transparent);
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .header {
+            grid-column: span 4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card { text-align: center; }
+        .stat-value { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 0.5rem 0; }
+        .stat-label { color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1rem; font-size: 0.75rem; }
+
+        .chart-container { grid-column: span 2; min-height: 300px; }
+        .full-width { grid-column: span 4; }
+
+        .event-list, .alert-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .severity-pill {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .HIGH { background: rgba(239, 68, 68, 0.2); color: #fecaca; border: 1px solid var(--high-severity); }
+        .MEDIUM { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid var(--med-severity); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+        h2 { margin-bottom: 1.5rem; font-weight: 600; font-size: 1.25rem; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🛡️ Guardian <span style="color: var(--primary)">SIEM</span></h1>
+            <div id="statusIndicator" style="display: flex; align-items: center; gap: 0.5rem">
+                <div style="width: 10px; height: 10px; background: #10b981; border-radius: 50%"></div>
+                Live Monitoring
+            </div>
+        </div>
+
+        <div class="glass-card stat-card">
+            <div class="stat-label">Total Events</div>
+            <div class="stat-value" id="countEvents">0</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-label">Critical Alerts</div>
+            <div class="stat-value" id="countHigh" style="color: var(--high-severity)">0</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-label">Medium Alerts</div>
+            <div class="stat-value" id="countMed" style="color: var(--med-severity)">0</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-label">System Health</div>
+            <div class="stat-value" style="color: #10b981">100%</div>
+        </div>
+
+        <div class="glass-card chart-container">
+            <h2>Threat Distribution</h2>
+            <canvas id="severityChart"></canvas>
+        </div>
+
+        <div class="glass-card chart-container">
+            <h2>Top Sources</h2>
+            <div id="topIpList" style="margin-top: 1rem">
+                <!-- Top IPs injected here -->
+            </div>
+        </div>
+
+        <div class="glass-card full-width">
+            <h2>Recent Security Alerts</h2>
+            <div class="alert-list" id="alertContainer">
+                <!-- Alerts injected here -->
+            </div>
+        </div>
+
+        <div class="glass-card full-width">
+            <h2>Real-time Event Log</h2>
+            <div class="event-list" id="eventContainer">
+                <!-- Events injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
